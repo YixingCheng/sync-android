@@ -39,6 +39,9 @@ public class BasicPushStrategyTest2 extends ReplicationTestBase {
     String id2;
     String id3;
 
+    BasicPushStrategy push;
+    BasicPullStrategy pull;
+
     /**
      * After all documents are created:
      *
@@ -84,13 +87,13 @@ public class BasicPushStrategyTest2 extends ReplicationTestBase {
 
         populateSomeDataInLocalDatastore();
         push();
-        Assert.assertEquals("8", remoteDb.getCheckpoint(datastore.getPublicIdentifier()));
+        Assert.assertEquals("8", remoteDb.getCheckpoint(push.getReplicationId()));
 
         updateDataInLocalDatastore();
         updateDataInRemoteDatabase();
 
         push();
-        Assert.assertEquals("12", remoteDb.getCheckpoint(datastore.getPublicIdentifier()));
+        Assert.assertEquals("12", remoteDb.getCheckpoint(push.getReplicationId()));
 
         pull();
 
@@ -191,7 +194,7 @@ public class BasicPushStrategyTest2 extends ReplicationTestBase {
 
     private void push() throws Exception {
         TestStrategyListener listener = new TestStrategyListener();
-        BasicPushStrategy push = new BasicPushStrategy(this.createPushReplication());
+        push = new BasicPushStrategy(this.createPushReplication());
         push.eventBus.register(listener);
 
         Thread t = new Thread(push);
@@ -203,7 +206,7 @@ public class BasicPushStrategyTest2 extends ReplicationTestBase {
 
     private void pull() throws Exception {
         TestStrategyListener listener = new TestStrategyListener();
-        BasicPullStrategy pull = new BasicPullStrategy(this.createPullReplication());
+        pull = new BasicPullStrategy(this.createPullReplication());
         pull.getEventBus().register(listener);
 
         Thread t = new Thread(pull);
