@@ -388,7 +388,11 @@ class BasicPullStrategy implements ReplicationStrategy {
         if(filter != null) {
             dict.put("filter", this.filter.toQueryString());
         }
-        return new String(new Hex().encode(Misc.getSha1(new ByteArrayInputStream(JSONUtils.serializeAsBytes(dict)))));
+        // get raw SHA-1 of dictionary
+        byte[] sha1Bytes = Misc.getSha1(new ByteArrayInputStream(JSONUtils.serializeAsBytes(dict)));
+        // return SHA-1 as a hex string
+        byte[] sha1Hex = new Hex().encode(sha1Bytes);
+        return new String(sha1Hex);
     }
 
     private ChangesResultWrapper nextBatch() {

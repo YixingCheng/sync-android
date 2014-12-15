@@ -321,7 +321,11 @@ class BasicPushStrategy implements ReplicationStrategy {
         HashMap<String, String> dict = new HashMap<String, String>();
         dict.put("source", this.sourceDb.getIdentifier());
         dict.put("target", this.targetDb.getIdentifier());
-        return new String(new Hex().encode(Misc.getSha1(new ByteArrayInputStream(JSONUtils.serializeAsBytes(dict)))));
+        // get raw SHA-1 of dictionary
+        byte[] sha1Bytes = Misc.getSha1(new ByteArrayInputStream(JSONUtils.serializeAsBytes(dict)));
+        // return SHA-1 as a hex string
+        byte[] sha1Hex = new Hex().encode(sha1Bytes);
+        return new String(sha1Hex);
     }
 
     private long getLastCheckpointSequence() {
